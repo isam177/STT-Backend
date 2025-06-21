@@ -1,3 +1,11 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+
+# Install Python
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip && \
+    ln -s /usr/bin/python3 /usr/bin/python
+
+
 # Use the official .NET SDK image to build the app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
