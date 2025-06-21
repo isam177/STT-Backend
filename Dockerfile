@@ -22,8 +22,8 @@ COPY --from=build /app/out .
 # Copy your Python script
 COPY ToText.py .
 
-# Install Python dependencies for your script
-RUN pip3 install --no-cache-dir \
+# Install Python dependencies for your script (bypass externally-managed-environment)
+RUN pip3 install --no-cache-dir --break-system-packages \
     openai-whisper \
     SpeechRecognition \
     torch \
