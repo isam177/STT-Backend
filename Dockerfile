@@ -2,7 +2,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 # Install Python in base stage
 RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
-    ln -s /usr/bin/python3 /usr/bin/python
+    ln -s /usr/bin/python3 /usr/bin/python && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Use the official .NET SDK image to build the app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -17,11 +19,16 @@ FROM base AS final
 WORKDIR /app
 COPY --from=build /app/out .
 
-# Copy your Python script and any requirements
-COPY your-python-script.py .
-# If you have a requirements.txt file, copy and install dependencies
-# COPY requirements.txt .
-# RUN pip3 install -r requirements.txt
+# Copy your Python script
+COPY ToText.py .
+
+# Install Python dependencies for your script
+RUN pip3 install --no-cache-dir \
+    openai-whisper \
+    SpeechRecognition \
+    torch \
+    torchaudio \
+    numpy
 
 # Tell Render how to run your app
 ENTRYPOINT ["dotnet", "STT.dll"]
