@@ -33,3 +33,4 @@ C:\Users\TG3\source\repos\STT\STT\obj\Debug\net8.0\refint\STT.dll
 C:\Users\TG3\source\repos\STT\STT\obj\Debug\net8.0\STT.pdb
 C:\Users\TG3\source\repos\STT\STT\obj\Debug\net8.0\STT.genruntimeconfig.cache
 C:\Users\TG3\source\repos\STT\STT\obj\Debug\net8.0\ref\STT.dll
+C:\Users\TG3\source\repos\STT\STT\obj\Debug\net8.0\STT.sourcelink.json
