@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-# Install Python in base stage
+# Install Python and ffmpeg in base stage
 RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
+    apt-get install -y python3 python3-pip ffmpeg && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -29,6 +29,13 @@ RUN pip3 install --no-cache-dir --break-system-packages \
     torch \
     torchaudio \
     numpy
+
+# Set environment variables for Render
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+# Expose port 8080 (Render's default)
+EXPOSE 8080
 
 # Tell Render how to run your app
 ENTRYPOINT ["dotnet", "STT.dll"]
