@@ -1,10 +1,14 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+
 # Install Python, ffmpeg, wget, and unzip in base stage
 RUN apt-get update && \
     apt-get install -y python3 python3-pip ffmpeg wget unzip && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Debug: confirm Python is installed
+RUN which python && python --version
 
 # Use the official .NET SDK image to build the app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -22,7 +26,7 @@ COPY --from=build /app/out .
 # Copy your Python script
 COPY ToText.py .
 
-# Install Python dependencies for your script (bypass externally-managed-environment)
+# Install Python dependencies
 RUN pip3 install --no-cache-dir --break-system-packages \
     openai-whisper \
     SpeechRecognition \
@@ -37,12 +41,17 @@ RUN mkdir -p /app/vosk-models && \
     unzip /tmp/vosk-model.zip -d /app/vosk-models && \
     rm /tmp/vosk-model.zip
 
+# Debug: confirm files exist
+RUN ls -la /app/ && \
+    ls -la /app/vosk-models/ && \
+    ls -la /app/vosk-models/vosk-model-small-en-us-0.15
+
 # Set environment variables for Render
 ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-# Expose port 8080 (Render's default)
+# Expose port 8080
 EXPOSE 8080
 
-# Tell Render how to run your app
+# Run the app
 ENTRYPOINT ["dotnet", "STT.dll"]
