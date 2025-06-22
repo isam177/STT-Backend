@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-# Install Python and ffmpeg in base stage
+# Install Python, ffmpeg, wget, and unzip in base stage
 RUN apt-get update && \
-    apt-get install -y python3 python3-pip ffmpeg && \
+    apt-get install -y python3 python3-pip ffmpeg wget unzip && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -28,7 +28,14 @@ RUN pip3 install --no-cache-dir --break-system-packages \
     SpeechRecognition \
     torch \
     torchaudio \
-    numpy
+    numpy \
+    vosk
+
+# Download a Vosk language model (small English model)
+RUN mkdir -p /app/vosk-models && \
+    wget -O /tmp/vosk-model.zip https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip && \
+    unzip /tmp/vosk-model.zip -d /app/vosk-models && \
+    rm /tmp/vosk-model.zip
 
 # Set environment variables for Render
 ENV ASPNETCORE_URLS=http://0.0.0.0:8080
